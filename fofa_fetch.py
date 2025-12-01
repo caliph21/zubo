@@ -5,7 +5,7 @@ import time
 import concurrent.futures
 import subprocess
 from datetime import datetime, timezone, timedelta
-import socket  # 添加缺失的socket模块
+import socket
 
 # ===============================
 # 配置区
@@ -51,7 +51,7 @@ CHANNEL_CATEGORIES = {
     "湖北": [
         "湖北公共新闻", "湖北经视频道", "湖北综合频道", "湖北垄上频道", "湖北影视频道", "湖北生活频道", "湖北教育频道", "武汉新闻综合", "武汉电视剧", "武汉科技生活",
         "武汉文体频道", "武汉教育频道", "阳新综合", "房县综合", "蔡甸综合",
-    ],#任意添加，与仓库中rtp/省份运营商.txt内频道一致即可，或在下方频道名映射中改名
+    ],
 }
 
 # ===== 映射（别名 -> 标准名） =====
@@ -152,7 +152,7 @@ CHANNEL_MAPPING = {
     "中国交通": ["中国交通频道"],
     "中国天气": ["中国天气频道"],
     "华数4K": ["华数低于4K", "华数4K电影", "华数爱上4K"],
-}#格式为"频道分类中的标准名": ["rtp/中的名字"],
+}
 
 # ===============================
 def get_run_count():
@@ -507,12 +507,37 @@ def push_all_files():
     except Exception:
         pass
 
+    # 先拉取远程更改，避免推送冲突
+    print("🔄 同步远程更改...")
+    pull_result = os.system("git pull --rebase origin main")
+    if pull_result != 0:
+        print("⚠️ git pull 失败，尝试继续推送")
+
+    # 添加文件（仅当文件存在时才添加）
     os.system("git add 计数.txt || true")
     os.system("git add ip/*.txt || true")
     os.system("git add IPTV.txt || true")
-    os.system(f"git add {MIGU_FILE} || true")  # 添加 MiGu.txt
-    os.system('git commit -m "自动更新：计数、IP文件、IPTV.txt、MiGu.txt" || echo "⚠️ 无需提交"')
-    os.system("git push origin main || echo '⚠️ 推送失败'")
+    
+    # 仅在 MiGu.txt 存在时才添加
+    if os.path.exists(MIGU_FILE):
+        print(f"📁 添加 {MIGU_FILE} 到 git")
+        os.system(f"git add {MIGU_FILE} || true")
+    else:
+        print(f"⚠️ {MIGU_FILE} 不存在，跳过添加")
+
+    # 根据是否有 MiGu.txt 文件来调整提交信息
+    commit_msg = "自动更新：计数、IP文件、IPTV.txt"
+    if os.path.exists(MIGU_FILE):
+        commit_msg += "、MiGu.txt"
+    
+    os.system(f'git commit -m "{commit_msg}" || echo "⚠️ 无需提交"')
+    
+    print("🔼 推送到远程仓库...")
+    push_result = os.system("git push origin main")
+    if push_result != 0:
+        print("❌ 推送失败")
+    else:
+        print("✅ 推送成功")
 
 
 # ===============================
@@ -525,10 +550,14 @@ if __name__ == "__main__":
     run_count = first_stage()
 
     if run_count % 10 == 0:
+        print(f"🔢 运行次数是10的倍数 ({run_count})，执行第二、三、四阶段")
         second_stage()
         third_stage()
         fourth_stage()  # 添加第四阶段
     else:
-        print("ℹ️ 本次不是 10 的倍数，跳过第二、三、四阶段")
+        print(f"ℹ️ 本次不是 10 的倍数 ({run_count})，只执行第四阶段")
+        # 您可以选择是否每次运行都执行第四阶段
+        # 如果希望每次都下载 MiGu.txt，取消下面的注释
+        fourth_stage()
 
     push_all_files()
