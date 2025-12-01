@@ -5,6 +5,7 @@ import time
 import concurrent.futures
 import subprocess
 from datetime import datetime, timezone, timedelta
+import socket  # 添加缺失的socket模块
 
 # ===============================
 # 配置区
@@ -20,6 +21,7 @@ IP_DIR = "ip"
 RTP_DIR = "rtp"
 ZUBO_FILE = "zubo.txt"
 IPTV_FILE = "IPTV.txt"
+MIGU_FILE = "MiGu.txt"  # 新增：MiGu.txt文件名
 
 # ===============================
 # 分类与映射配置
@@ -464,6 +466,37 @@ def third_stage():
     except Exception as e:
         print(f"❌ 写 IPTV.txt 失败：{e}")
 
+
+# ===============================
+# 第四阶段：下载 MiGu.txt 文件
+def fourth_stage():
+    """
+    第四阶段：从指定URL下载MiGu.txt文件并保存到当前目录
+    """
+    print("📥 第四阶段：下载 MiGu.txt 文件")
+    
+    migu_url = "https://itv.shrimp.netlib.re/MiGu.txt"
+    
+    try:
+        print(f"正在下载 {migu_url} ...")
+        response = requests.get(migu_url, headers=HEADERS, timeout=30)
+        response.raise_for_status()  # 检查请求是否成功
+        
+        # 保存文件
+        with open(MIGU_FILE, "w", encoding="utf-8") as f:
+            f.write(response.text)
+        
+        print(f"✅ MiGu.txt 下载完成，大小：{len(response.text)} 字节")
+        return True
+        
+    except requests.exceptions.RequestException as e:
+        print(f"❌ 下载 MiGu.txt 失败：{e}")
+        return False
+    except Exception as e:
+        print(f"❌ 保存 MiGu.txt 失败：{e}")
+        return False
+
+
 # ===============================
 # 文件推送
 def push_all_files():
@@ -477,8 +510,10 @@ def push_all_files():
     os.system("git add 计数.txt || true")
     os.system("git add ip/*.txt || true")
     os.system("git add IPTV.txt || true")
-    os.system('git commit -m "自动更新：计数、IP文件、IPTV.txt" || echo "⚠️ 无需提交"')
+    os.system(f"git add {MIGU_FILE} || true")  # 添加 MiGu.txt
+    os.system('git commit -m "自动更新：计数、IP文件、IPTV.txt、MiGu.txt" || echo "⚠️ 无需提交"')
     os.system("git push origin main || echo '⚠️ 推送失败'")
+
 
 # ===============================
 # 主执行逻辑
@@ -492,7 +527,8 @@ if __name__ == "__main__":
     if run_count % 10 == 0:
         second_stage()
         third_stage()
+        fourth_stage()  # 添加第四阶段
     else:
-        print("ℹ️ 本次不是 10 的倍数，跳过第二、三阶段")
+        print("ℹ️ 本次不是 10 的倍数，跳过第二、三、四阶段")
 
     push_all_files()
