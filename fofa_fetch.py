@@ -21,7 +21,8 @@ IP_DIR = "ip"
 RTP_DIR = "rtp"
 ZUBO_FILE = "zubo.txt"
 IPTV_FILE = "IPTV.txt"
-MIGU_FILE = "MiGu.txt"  # 新增：MiGu.txt文件名
+MIGU_FILE = "MiGu.txt"
+ITV_FILE = "iTV.txt"  # 新增：iTV.txt文件名
 
 # ===============================
 # 分类与映射配置
@@ -498,6 +499,36 @@ def fourth_stage():
 
 
 # ===============================
+# 第五阶段：下载 Internet_iTV.txt 并重命名为 iTV.txt
+def fifth_stage():
+    """
+    第五阶段：从指定URL下载Internet_iTV.txt文件并重命名为iTV.txt
+    """
+    print("📥 第五阶段：下载并重命名 iTV.txt 文件")
+    
+    itv_url = "https://itv.shrimp.netlib.re/Internet_iTV.txt"
+    
+    try:
+        print(f"正在下载 {itv_url} ...")
+        response = requests.get(itv_url, headers=HEADERS, timeout=30)
+        response.raise_for_status()  # 检查请求是否成功
+        
+        # 保存文件，直接使用新的文件名 iTV.txt
+        with open(ITV_FILE, "w", encoding="utf-8") as f:
+            f.write(response.text)
+        
+        print(f"✅ iTV.txt 下载完成，大小：{len(response.text)} 字节")
+        return True
+        
+    except requests.exceptions.RequestException as e:
+        print(f"❌ 下载 iTV.txt 失败：{e}")
+        return False
+    except Exception as e:
+        print(f"❌ 保存 iTV.txt 失败：{e}")
+        return False
+
+
+# ===============================
 # 文件推送
 def push_all_files():
     print("🚀 推送所有更新文件到 GitHub...")
@@ -524,11 +555,20 @@ def push_all_files():
         os.system(f"git add {MIGU_FILE} || true")
     else:
         print(f"⚠️ {MIGU_FILE} 不存在，跳过添加")
-
-    # 根据是否有 MiGu.txt 文件来调整提交信息
+    
+    # 仅在 iTV.txt 存在时才添加
+    if os.path.exists(ITV_FILE):
+        print(f"📁 添加 {ITV_FILE} 到 git")
+        os.system(f"git add {ITV_FILE} || true")
+    else:
+        print(f"⚠️ {ITV_FILE} 不存在，跳过添加")
+    
+    # 根据存在的文件动态调整提交信息
     commit_msg = "自动更新：计数、IP文件、IPTV.txt"
     if os.path.exists(MIGU_FILE):
         commit_msg += "、MiGu.txt"
+    if os.path.exists(ITV_FILE):
+        commit_msg += "、iTV.txt"
     
     os.system(f'git commit -m "{commit_msg}" || echo "⚠️ 无需提交"')
     
@@ -550,14 +590,14 @@ if __name__ == "__main__":
     run_count = first_stage()
 
     if run_count % 10 == 0:
-        print(f"🔢 运行次数是10的倍数 ({run_count})，执行第二、三、四阶段")
+        print(f"🔢 运行次数是10的倍数 ({run_count})，执行第二、三、四、五阶段")
         second_stage()
         third_stage()
-        fourth_stage()  # 添加第四阶段
-    else:
-        print(f"ℹ️ 本次不是 10 的倍数 ({run_count})，只执行第四阶段")
-        # 您可以选择是否每次运行都执行第四阶段
-        # 如果希望每次都下载 MiGu.txt，取消下面的注释
         fourth_stage()
+        fifth_stage()  # 添加第五阶段
+    else:
+        print(f"ℹ️ 本次不是 10 的倍数 ({run_count})，只执行第四、五阶段")
+        fourth_stage()
+        fifth_stage()  # 添加第五阶段
 
     push_all_files()
