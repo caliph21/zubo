@@ -10,7 +10,7 @@ import socket
 # ===============================
 # 配置区
 FOFA_URLS = {
-    "https://fofa.info/result?qbase64=InVkcHh5IiAmJiBjb3VudHJ5PSJDTiI%3D": "ip.txt",
+    "https://fofa.info/result?qbase64=InVkcHh5IiAmJiBjb3VbnRyeT0iQ04i%3D": "ip.txt",
 }
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -23,6 +23,8 @@ ZUBO_FILE = "zubo.txt"
 IPTV_FILE = "IPTV.txt"
 MIGU_FILE = "MiGu.txt"
 ITV_FILE = "iTV.txt"  # 新增：iTV.txt文件名
+MIMA_FILE = "Mima.txt"  # 新增：密码文件
+BC_FILE = "bc.m3u"  # 新增：保存响应内容的文件
 
 # ===============================
 # 分类与映射配置
@@ -529,6 +531,68 @@ def fifth_stage():
 
 
 # ===============================
+# 第六阶段：访问特定URL并保存响应内容到bc.m3u
+def sixth_stage():
+    """
+    第六阶段：从Mima.txt读取密码，访问特定URL并保存响应内容到bc.m3u
+    """
+    print("🔑 第六阶段：访问特定URL并保存响应内容到bc.m3u")
+    
+    # 检查密码文件是否存在
+    if not os.path.exists(MIMA_FILE):
+        print(f"⚠️ {MIMA_FILE} 文件不存在，跳过第六阶段")
+        return False
+    
+    try:
+        # 读取密码
+        with open(MIMA_FILE, "r", encoding="utf-8") as f:
+            password = f.read().strip()
+        
+        if not password:
+            print(f"⚠️ {MIMA_FILE} 文件内容为空，跳过第六阶段")
+            return False
+        
+        print(f"🔑 从 {MIMA_FILE} 读取到密码: {password}")
+        
+        # 构建URL
+        url = f"https://bc.188766.xyz/?ip=127.0.0.1&mishitong=true&mima={password}"
+        
+        # 设置请求头（模拟okhttp）
+        headers = {
+            "accept-encoding": "gzip",
+            "user-agent": "okhttp/5.0.0-alpha.14",
+            "Host": "bc.188766.xyz"
+        }
+        
+        print(f"🌐 正在访问 URL: {url}")
+        
+        # 发送GET请求
+        response = requests.get(url, headers=headers, timeout=30)
+        response.raise_for_status()  # 检查请求是否成功
+        
+        # 保存响应内容到bc.m3u
+        with open(BC_FILE, "w", encoding="utf-8") as f:
+            f.write(response.text)
+        
+        print(f"✅ bc.m3u 保存完成，大小：{len(response.text)} 字节")
+        
+        # 检查文件内容（显示前几行）
+        lines = response.text.split('\n')
+        print(f"📄 文件前5行预览：")
+        for i in range(min(5, len(lines))):
+            print(f"  {i+1}: {lines[i][:100]}{'...' if len(lines[i]) > 100 else ''}")
+        
+        return True
+        
+    except FileNotFoundError:
+        print(f"❌ {MIMA_FILE} 文件不存在")
+        return False
+    except Exception as e:
+        print(f"❌ 第六阶段执行失败：{e}")
+        return False
+
+
+# ===============================
 # 文件推送
 def push_all_files():
     print("🚀 推送所有更新文件到 GitHub...")
@@ -563,12 +627,21 @@ def push_all_files():
     else:
         print(f"⚠️ {ITV_FILE} 不存在，跳过添加")
     
+    # 仅在 bc.m3u 存在时才添加
+    if os.path.exists(BC_FILE):
+        print(f"📁 添加 {BC_FILE} 到 git")
+        os.system(f"git add {BC_FILE} || true")
+    else:
+        print(f"⚠️ {BC_FILE} 不存在，跳过添加")
+    
     # 根据存在的文件动态调整提交信息
     commit_msg = "自动更新：计数、IP文件、IPTV.txt"
     if os.path.exists(MIGU_FILE):
         commit_msg += "、MiGu.txt"
     if os.path.exists(ITV_FILE):
         commit_msg += "、iTV.txt"
+    if os.path.exists(BC_FILE):
+        commit_msg += "、bc.m3u"
     
     os.system(f'git commit -m "{commit_msg}" || echo "⚠️ 无需提交"')
     
@@ -590,14 +663,16 @@ if __name__ == "__main__":
     run_count = first_stage()
 
     if run_count % 10 == 0:
-        print(f"🔢 运行次数是10的倍数 ({run_count})，执行第二、三、四、五阶段")
+        print(f"🔢 运行次数是10的倍数 ({run_count})，执行第二、三、四、五、六阶段")
         second_stage()
         third_stage()
         fourth_stage()
-        fifth_stage()  # 添加第五阶段
+        fifth_stage()
+        sixth_stage()  # 添加第六阶段
     else:
-        print(f"ℹ️ 本次不是 10 的倍数 ({run_count})，只执行第四、五阶段")
+        print(f"ℹ️ 本次不是 10 的倍数 ({run_count})，只执行第四、五、六阶段")
         fourth_stage()
-        fifth_stage()  # 添加第五阶段
+        fifth_stage()
+        sixth_stage()  # 添加第六阶段
 
     push_all_files()
