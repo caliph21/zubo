@@ -1092,6 +1092,12 @@ http://127.0.0.1:35455/bilibili/8178490
 http://127.0.0.1:35455/bilibili/22102223
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/logo/B站.png" group-title="其他影视",B站|看纳豆的魔鬼天使
 http://127.0.0.1:35455/bilibili/uid:65989750
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/hunanjingshi&douyin&logo" group-title="其他影视",抖音|湖南经视
+http://127.0.0.1:35455/douyin/uid/hunanjingshi
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/cctv6media.&douyin&logo" group-title="其他影视",抖音|CCTV6
+http://127.0.0.1:35455/douyin/uid/cctv6media.
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/nuanxinnengl&douyin&logo" group-title="其他影视",抖音|央视网财经
+http://127.0.0.1:35455/douyin/uid/nuanxinnengl
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/122402&douyu&logo" group-title="斗鱼影视",周星驰
 http://127.0.0.1:35455/douyu/122402
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/20415&douyu&logo" group-title="斗鱼影视",斗鱼20415
@@ -1106,6 +1112,8 @@ http://127.0.0.1:35455/yy/504368
 http://127.0.0.1:35455/huya/17091681
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21241811&huya&logo" group-title="虎牙影视",治愈放松[音乐]
 http://127.0.0.1:35455/huya/21241811
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21241813&huya&logo" group-title="虎牙影视",阅读学习[音乐]
+http://127.0.0.1:35455/huya/21241813
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/23865080&huya&logo" group-title="虎牙影视",香港喜剧大全
 http://127.0.0.1:35455/huya/23865080
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11342412&huya&logo" group-title="虎牙影视",周星星
@@ -1120,6 +1128,8 @@ http://127.0.0.1:35455/huya/11342386
 http://127.0.0.1:35455/huya/11342421
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26355802&huya&logo" group-title="虎牙影视",之而成冠毛
 http://127.0.0.1:35455/huya/26355802
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26298751&huya&logo" group-title="虎牙影视",婧丶
+http://127.0.0.1:35455/huya/26298751
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11602068&huya&logo" group-title="虎牙影视",我爱黑科技
 http://127.0.0.1:35455/huya/11602068
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11342435&huya&logo" group-title="虎牙影视",可爱的小强
@@ -1266,8 +1276,6 @@ http://127.0.0.1:35455/huya/11352871
 http://127.0.0.1:35455/huya/11352898
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11601957&huya&logo" group-title="虎牙影视",鬼吹灯之昆仑神宫
 http://127.0.0.1:35455/huya/11601957
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11601966&huya&logo" group-title="虎牙影视",七龙珠改-超级赛亚人孙悟空
-http://127.0.0.1:35455/huya/11601966
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352913&huya&logo" group-title="虎牙影视",古墓系列-去冒险吧!
 http://127.0.0.1:35455/huya/11352913
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11602069&huya&logo" group-title="虎牙影视",向阳花-神奇宝贝
