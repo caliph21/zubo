@@ -982,6 +982,8 @@ http://127.0.0.1:35455/bilibili/22102223
 http://127.0.0.1:35455/bilibili/uid:65989750
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/1817728740&bilibili&logo" group-title="其他影视",B站|神人公园
 http://127.0.0.1:35455/bilibili/1817728740
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/122402&douyu&logo" group-title="斗鱼影视",周星驰
+http://127.0.0.1:35455/douyu/122402
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/20415&douyu&logo" group-title="斗鱼影视",斗鱼20415
 http://127.0.0.1:35455/douyu/20415
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/4837387&douyu&logo" group-title="斗鱼影视",自然纪录片
