@@ -980,6 +980,8 @@ http://127.0.0.1:35455/douyu/6672862
 http://127.0.0.1:35455/bilibili/30098402
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26752884&bilibili&logo" group-title="其他影视",B站|恶搞之家
 http://127.0.0.1:35455/bilibili/26752884
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/2064239&bilibili&logo" group-title="其他影视",B站|鹿野灸
+http://127.0.0.1:35455/bilibili/2064239
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/30041682&bilibili&logo" group-title="其他影视",B站|臣臣
 http://127.0.0.1:35455/bilibili/30041682
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/8178490&bilibili&logo" group-title="其他影视",B站|央视新闻直播
@@ -992,8 +994,6 @@ http://127.0.0.1:35455/bilibili/uid:65989750
 http://127.0.0.1:35455/bilibili/1817728740
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/hunanjingshi&douyin&logo" group-title="其他影视",抖音|湖南经视
 http://127.0.0.1:35455/douyin/uid/hunanjingshi
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/cctv6media.&douyin&logo" group-title="其他影视",抖音|CCTV6
-http://127.0.0.1:35455/douyin/uid/cctv6media.
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/nuanxinnengl&douyin&logo" group-title="其他影视",抖音|央视网财经
 http://127.0.0.1:35455/douyin/uid/nuanxinnengl
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/122402&douyu&logo" group-title="斗鱼影视",周星驰
@@ -1082,6 +1082,8 @@ http://127.0.0.1:35455/huya/11601981
 http://127.0.0.1:35455/huya/21059563
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11601958&huya&logo" group-title="虎牙影视",熊猫
 http://127.0.0.1:35455/huya/11601958
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11342429&huya&logo" group-title="虎牙影视",梁家辉
+http://127.0.0.1:35455/huya/11342429
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352877&huya&logo" group-title="虎牙影视",王宝强
 http://127.0.0.1:35455/huya/11352877
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352970&huya&logo" group-title="虎牙影视",野原的一家
@@ -1110,8 +1112,6 @@ http://127.0.0.1:35455/huya/21059577
 http://127.0.0.1:35455/huya/11352886
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352962&huya&logo" group-title="虎牙影视",电影_罪犯
 http://127.0.0.1:35455/huya/11352962
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11279247&huya&logo" group-title="虎牙影视",电影_赛车
-http://127.0.0.1:35455/huya/11279247
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11602041&huya&logo" group-title="虎牙影视",电影_推荐
 http://127.0.0.1:35455/huya/11602041
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11602081&huya&logo" group-title="虎牙影视",三国演义
@@ -1242,6 +1242,8 @@ http://127.0.0.1:35455/huya/11352960
 http://127.0.0.1:35455/huya/30993430
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/29835225&huya&logo" group-title="虎牙影视",沐希兔子
 http://127.0.0.1:35455/huya/29835225
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11336592&huya&logo" group-title="虎牙影视",红茶妹妹
+http://127.0.0.1:35455/huya/11336592
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/16857432&huya&logo" group-title="虎牙影视",小丑讲电影
 http://127.0.0.1:35455/huya/16857432
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/15894162&huya&logo" group-title="虎牙影视",越哥说电影
