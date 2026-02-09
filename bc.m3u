@@ -992,6 +992,8 @@ http://127.0.0.1:35455/bilibili/uid:65989750
 http://127.0.0.1:35455/bilibili/1817728740
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/hunanjingshi&douyin&logo" group-title="其他影视",抖音|湖南经视
 http://127.0.0.1:35455/douyin/uid/hunanjingshi
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/zjzywjt&douyin&logo" group-title="其他影视",抖音|浙江中月婺剧团
+http://127.0.0.1:35455/douyin/uid/zjzywjt
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/cctv6media.&douyin&logo" group-title="其他影视",抖音|CCTV6
 http://127.0.0.1:35455/douyin/uid/cctv6media.
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/nuanxinnengl&douyin&logo" group-title="其他影视",抖音|央视网财经
@@ -1086,14 +1088,14 @@ http://127.0.0.1:35455/huya/21059567
 http://127.0.0.1:35455/huya/11342425
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26355781&huya&logo" group-title="虎牙影视",探索
 http://127.0.0.1:35455/huya/26355781
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11342424&huya&logo" group-title="虎牙影视",刘德华
-http://127.0.0.1:35455/huya/11342424
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11274154&huya&logo" group-title="虎牙影视",陈翔六点半
 http://127.0.0.1:35455/huya/11274154
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21136378&huya&logo" group-title="虎牙影视",周星驰吧
 http://127.0.0.1:35455/huya/21136378
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11601968&huya&logo" group-title="虎牙影视",电影_沈腾
 http://127.0.0.1:35455/huya/11601968
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21059581&huya&logo" group-title="虎牙影视",电影_强森
+http://127.0.0.1:35455/huya/21059581
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11602034&huya&logo" group-title="虎牙影视",电影_漫威
 http://127.0.0.1:35455/huya/11602034
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21059577&huya&logo" group-title="虎牙影视",电影_怪兽
@@ -1214,8 +1216,6 @@ http://127.0.0.1:35455/huya/30590779
 http://127.0.0.1:35455/huya/29982636
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/23650804&huya&logo" group-title="虎牙影视",马大帅
 http://127.0.0.1:35455/huya/23650804
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21059588&huya&logo" group-title="虎牙影视",虎牙21059588
-http://127.0.0.1:35455/huya/21059588
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/30523326&huya&logo" group-title="虎牙影视",家有儿女
 http://127.0.0.1:35455/huya/30523326
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/30080148&huya&logo" group-title="虎牙影视",国语版柯南，点到哪集看哪集
