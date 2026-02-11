@@ -1104,8 +1104,6 @@ http://127.0.0.1:35455/huya/26355861
 http://127.0.0.1:35455/huya/11352958
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11601986&huya&logo" group-title="虎牙影视",贺岁
 http://127.0.0.1:35455/huya/11601986
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26355829&huya&logo" group-title="虎牙影视",超
-http://127.0.0.1:35455/huya/26355829
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352935&huya&logo" group-title="虎牙影视",丹
 http://127.0.0.1:35455/huya/11352935
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11601981&huya&logo" group-title="虎牙影视",成立
@@ -1136,8 +1134,6 @@ http://127.0.0.1:35455/huya/21136378
 http://127.0.0.1:35455/huya/11601968
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21059581&huya&logo" group-title="虎牙影视",电影_强森
 http://127.0.0.1:35455/huya/21059581
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11602034&huya&logo" group-title="虎牙影视",电影_漫威
-http://127.0.0.1:35455/huya/11602034
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21059577&huya&logo" group-title="虎牙影视",电影_怪兽
 http://127.0.0.1:35455/huya/21059577
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352886&huya&logo" group-title="虎牙影视",电影_警匪
@@ -1242,6 +1238,8 @@ http://127.0.0.1:35455/huya/11352879
 http://127.0.0.1:35455/huya/29982668
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26355866&huya&logo" group-title="虎牙影视",与凤行
 http://127.0.0.1:35455/huya/26355866
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/29982670&huya&logo" group-title="虎牙影视",陆贞传奇
+http://127.0.0.1:35455/huya/29982670
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/logo/虎牙.png" group-title="虎牙影视",搞笑一家人
 http://127.0.0.1:35455/huya/11342402
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11342439&huya&logo" group-title="虎牙影视",我是詹密
@@ -1276,6 +1274,8 @@ http://127.0.0.1:35455/huya/16424416
 http://127.0.0.1:35455/huya/15870999
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/16615910&huya&logo" group-title="虎牙影视",鱼丸说电影
 http://127.0.0.1:35455/huya/16615910
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/16507906&huya&logo" group-title="虎牙影视",楚门聊电影
+http://127.0.0.1:35455/huya/16507906
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/18715610&huya&logo" group-title="虎牙影视",电影狂人
 http://127.0.0.1:35455/huya/18715610
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21059623&huya&logo" group-title="虎牙影视",扁豆看电影2
