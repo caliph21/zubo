@@ -912,8 +912,6 @@ http://127.0.0.1:35455/douyu/7722576
 http://127.0.0.1:35455/douyu/6672862
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26752884&bilibili&logo" group-title="其他影视",B站|恶搞之家
 http://127.0.0.1:35455/bilibili/26752884
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/30224749&bilibili&logo" group-title="其他影视",B站|蜡笔小新|新酱不狐涂
-http://127.0.0.1:35455/bilibili/30224749
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/30041682&bilibili&logo" group-title="其他影视",B站|臣臣
 http://127.0.0.1:35455/bilibili/30041682
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/1788399700&bilibili&logo" group-title="其他影视",B站|金田一
@@ -922,8 +920,6 @@ http://127.0.0.1:35455/bilibili/1788399700
 http://127.0.0.1:35455/bilibili/22102223
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/logo/B站.png" group-title="其他影视",B站|看纳豆的魔鬼天使
 http://127.0.0.1:35455/bilibili/uid:65989750
-#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/1817728740&bilibili&logo" group-title="其他影视",B站|神人公园
-http://127.0.0.1:35455/bilibili/1817728740
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/21756924&bilibili&logo" group-title="其他影视",B站|雪绘Yukie
 http://127.0.0.1:35455/bilibili/21756924
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/122402&douyu&logo" group-title="斗鱼影视",周星驰
@@ -964,6 +960,8 @@ http://127.0.0.1:35455/huya/26355802
 http://127.0.0.1:35455/huya/26298751
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11602068&huya&logo" group-title="虎牙影视",我爱黑科技
 http://127.0.0.1:35455/huya/11602068
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11342435&huya&logo" group-title="虎牙影视",可爱的小强
+http://127.0.0.1:35455/huya/11342435
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/26355824&huya&logo" group-title="虎牙影视",尽是与君别
 http://127.0.0.1:35455/huya/26355824
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/23863804&huya&logo" group-title="虎牙影视",iTVB大后宫
@@ -1008,6 +1006,8 @@ http://127.0.0.1:35455/huya/11601981
 http://127.0.0.1:35455/huya/21059563
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11601958&huya&logo" group-title="虎牙影视",熊猫
 http://127.0.0.1:35455/huya/11601958
+#EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11342429&huya&logo" group-title="虎牙影视",梁家辉
+http://127.0.0.1:35455/huya/11342429
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352877&huya&logo" group-title="虎牙影视",王宝强
 http://127.0.0.1:35455/huya/11352877
 #EXTINF:-1 tvg-logo="https://epg-1.iill.top/i/11352970&huya&logo" group-title="虎牙影视",野原的一家
