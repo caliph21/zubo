@@ -1,9 +1,15 @@
-name: FOFA IP
-
+name: FOFA IP & IPTV Sync
+# ip.yaml
 on:
   schedule:
-    - cron: "*/10 * * * *"
+    # FOFA 任务：每 15 分钟执行一次
+    - cron: "*/15 * * * *"
+    # IPTV 任务：每 2 小时执行一次（UTC时间）
+    - cron: "0 */2 * * *"
   workflow_dispatch:          # 手动触发
+
+permissions:
+  contents: write
 
 jobs:
   fetch-and-push:
@@ -11,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           persist-credentials: true
 
@@ -25,18 +31,113 @@ jobs:
           python -m pip install --upgrade pip
           pip install requests
 
-      - name: Install ffmpeg
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+      - name: Install ffmpeg and wget
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg wget
 
+      # ===== FOFA 任务部分 =====
       - name: Run fofa_fetch.py
         run: python fofa_fetch.py
 
-      - name: Commit and push changes
+      # ===== IPTV 任务部分 =====
+      - name: Download and Update IPTV Playlists
+        run: |
+          set -e
+          echo "🎵 开始下载 IPTV 播放列表..."
+          
+          base="https://mgtv.ottiptv.cc"
+          files=("yylb.m3u" "hyyqk.m3u" "dyyqk.m3u" "bililive.m3u")
+          
+          download_with_retry () {
+            local url="$1"
+            local outfile="$2"
+            local tmpfile="${outfile}.tmp"
+            local attempt=1
+            local max=5
+
+            rm -f "$tmpfile"
+            while [ $attempt -le $max ]; do
+              echo "➡️  [$attempt/$max] 下载 $outfile ..."
+              if wget -q --timeout=15 --connect-timeout=10 "$url" -O "$tmpfile"; then
+                if [ -s "$tmpfile" ]; then
+                  mv "$tmpfile" "$outfile"
+                  echo "✅ $outfile 下载并覆盖完成"
+                  
+                  if [ "$outfile" = "dyyqk.m3u" ]; then
+                    sed -i 's#https://live.ottiptv.cc#https://goodiptv.club#g' "$outfile"
+                    echo "🔧 已将 $outfile 中的 live.ottiptv.cc 替换为 goodiptv.club"
+                  fi
+                  
+                  return 0
+                fi
+              fi
+              echo "⚠️  $outfile 下载失败，等待 $attempt 秒后重试..."
+              sleep $attempt
+              attempt=$(( attempt + 1 ))
+            done
+
+            echo "❌ $outfile 最终下载失败，保留旧版本"
+            rm -f "$tmpfile"
+            return 1
+          }
+
+          for f in "${files[@]}"; do
+            download_with_retry "${base}/${f}" "$f" || true
+          done
+
+          echo "📊 文件下载状态："
+          for f in "${files[@]}"; do
+            if [ -s "$f" ]; then
+              echo "✅ $f - $(wc -c < "$f") 字节"
+            else
+              echo "❌ $f - 文件不存在或为空"
+            fi
+          done
+
+      # ===== 统一提交部分 =====
+      - name: Check for changes and commit
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@users.noreply.github.com"
+          
+          echo "🔍 检查文件变更..."
+          
           git add 计数.txt
           git add ip/*.txt || true
-          git add IPTV.txt || true
-          git commit -m "自动更新：计数、IP文件、IPTV.txt" || echo "⚠️ 无需提交"
-          git push origin main || echo "⚠️ 推送失败"
+          git add iTV.txt || true
+          
+          if ls *.m3u 1> /dev/null 2>&1; then
+            git add *.m3u
+          fi
+          
+          if git diff --cached --quiet; then
+            echo "ℹ️ 没有检测到文件变更，跳过提交"
+            exit 0
+          else
+            echo "📝 变更的文件："
+            git diff --cached --name-only
+            
+            commit_msg="自动更新："
+            
+            if git diff --cached --name-only | grep -q "计数.txt\|ip/.*\.txt\|iTV.txt"; then
+              commit_msg="$commit_msg 组播源"
+            fi
+            
+            if git diff --cached --name-only | grep -q "\.m3u$"; then
+              if [[ "$commit_msg" == *"组播源"* ]]; then
+                commit_msg="$commit_msg 和 IPTV播放列表"
+              else
+                commit_msg="$commit_msg IPTV播放列表"
+              fi
+            fi
+            
+            commit_msg="$commit_msg - $(date '+%Y-%m-%d %H:%M:%S')"
+            
+            git commit -m "$commit_msg"
+            echo "✅ 已提交变更：$commit_msg"
+          fi
+
+      - name: Push changes
+        run: |
+          git push origin main || echo "⚠️ 推送失败，可能是没有变更或权限问题"
