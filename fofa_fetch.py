@@ -5,11 +5,12 @@ import time
 import concurrent.futures
 import subprocess
 from datetime import datetime, timezone, timedelta
-
+import socket
+# fofa_fetch.py
 # ===============================
 # 配置区
 FOFA_URLS = {
-    "https://fofa.info/result?qbase64=InVkcHh5IiAmJiBjb3VudHJ5PSJDTiI%3D": "ip.txt",
+    "https://fofa.info/result?qbase64=InVkcHh5IiAmJiBjb3VbnRyeT0iQ04i%3D": "ip.txt",
 }
 HEADERS = {
     "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)"
@@ -20,6 +21,10 @@ IP_DIR = "ip"
 RTP_DIR = "rtp"
 ZUBO_FILE = "zubo.txt"
 IPTV_FILE = "IPTV.txt"
+MIGU_FILE = "MiGu.txt"
+ITV_FILE = "iTV.txt"  # 新增：iTV.txt文件名
+MIMA_FILE = "Mima.txt"  # 新增：密码文件
+BC_FILE = "bc.m3u"  # 新增：保存响应内容的文件
 
 # ===============================
 # 分类与映射配置
@@ -39,7 +44,7 @@ CHANNEL_CATEGORIES = {
     ],
     "数字频道": [
         "CHC动作电影", "CHC家庭影院", "CHC影迷电影", "淘电影", "淘精彩", "淘剧场", "淘4K", "淘娱乐", "淘BABY", "淘萌宠", "重温经典",
-        "星空卫视", "ChannelV", "凤凰卫视中文台", "凤凰卫视资讯台", "凤凰卫视香港台", "凤凰卫视电影台", "求索纪录", "求索科学",
+        "星空卫视", "CHANNEL[V]", "凤凰卫视中文台", "凤凰卫视资讯台", "凤凰卫视香港台", "凤凰卫视电影台", "求索纪录", "求索科学",
         "求索生活", "求索动物", "纪实人文", "金鹰纪实", "纪实科教", "睛彩青少", "睛彩竞技", "睛彩篮球", "睛彩广场舞", "魅力足球", "五星体育",
         "劲爆体育", "快乐垂钓", "茶频道", "先锋乒羽", "天元围棋", "汽摩", "梨园频道", "文物宝库", "武术世界", "哒啵赛事", "哒啵电竞", "黑莓电影", "黑莓动画", 
         "乐游", "生活时尚", "都市剧场", "欢笑剧场", "游戏风云", "金色学堂", "动漫秀场", "新动漫", "卡酷少儿", "金鹰卡通", "优漫卡通", "哈哈炫动", "嘉佳卡通", 
@@ -49,7 +54,7 @@ CHANNEL_CATEGORIES = {
     "湖北": [
         "湖北公共新闻", "湖北经视频道", "湖北综合频道", "湖北垄上频道", "湖北影视频道", "湖北生活频道", "湖北教育频道", "武汉新闻综合", "武汉电视剧", "武汉科技生活",
         "武汉文体频道", "武汉教育频道", "阳新综合", "房县综合", "蔡甸综合",
-    ],#任意添加，与仓库中rtp/省份运营商.txt内频道一致即可，或在下方频道名映射中改名
+    ],
 }
 
 # ===== 映射（别名 -> 标准名） =====
@@ -123,7 +128,7 @@ CHANNEL_MAPPING = {
     "金鹰纪实": ["湖南金鹰纪实", "金鹰记实"],
     "纪实科教": ["北京纪实科教", "BRTV纪实科教", "纪实科教8K"],
     "星空卫视": ["星空衛視", "星空衛视", "星空卫視"],
-    "ChannelV": ["CHANNEL-V", "Channel[V]"],
+    "CHANNEL[V]": ["CHANNEL-V", "Channel[V]"],
     "凤凰卫视中文台": ["凤凰中文", "凤凰中文台", "凤凰卫视中文", "凤凰卫视"],
     "凤凰卫视香港台": ["凤凰香港台", "凤凰卫视香港", "凤凰香港"],
     "凤凰卫视资讯台": ["凤凰资讯", "凤凰资讯台", "凤凰咨询", "凤凰咨询台", "凤凰卫视咨询台", "凤凰卫视资讯", "凤凰卫视咨询"],
@@ -150,7 +155,7 @@ CHANNEL_MAPPING = {
     "中国交通": ["中国交通频道"],
     "中国天气": ["中国天气频道"],
     "华数4K": ["华数低于4K", "华数4K电影", "华数爱上4K"],
-}#格式为"频道分类中的标准名": ["rtp/中的名字"],
+}
 
 # ===============================
 def get_run_count():
@@ -444,7 +449,7 @@ def third_stage():
 
     # 写 IPTV.txt（包含更新时间与分类）
     beijing_now = datetime.now(timezone(timedelta(hours=8))).strftime("%Y-%m-%d %H:%M:%S")
-    disclaimer_url = "http://kakaxi.indevs.in/LOGO/Disclaimer.mp4"
+    disclaimer_url = "https://kakaxi-1.asia/LOGO/Disclaimer.mp4"
 
     try:
         with open(IPTV_FILE, "w", encoding="utf-8") as f:
@@ -464,6 +469,131 @@ def third_stage():
     except Exception as e:
         print(f"❌ 写 IPTV.txt 失败：{e}")
 
+
+# ===============================
+# 第四阶段：下载 MiGu.txt 文件
+def fourth_stage():
+    """
+    第四阶段：从指定URL下载MiGu.txt文件并保存到当前目录
+    """
+    print("📥 第四阶段：下载 MiGu.txt 文件")
+    
+    #migu_url = "https://itv.shrimp.netlib.re/MiGu.txt"
+    migu_url = "https://chinaiptv.pages.dev/Unicast/jiangsu/mobile.txt"
+    
+    
+    try:
+        print(f"正在下载 {migu_url} ...")
+        response = requests.get(migu_url, headers=HEADERS, timeout=30)
+        response.raise_for_status()  # 检查请求是否成功
+        
+        # 保存文件
+        with open(MIGU_FILE, "w", encoding="utf-8") as f:
+            f.write(response.text)
+        
+        print(f"✅ MiGu.txt 下载完成，大小：{len(response.text)} 字节")
+        return True
+        
+    except requests.exceptions.RequestException as e:
+        print(f"❌ 下载 MiGu.txt 失败：{e}")
+        return False
+    except Exception as e:
+        print(f"❌ 保存 MiGu.txt 失败：{e}")
+        return False
+
+
+# ===============================
+# 第五阶段：下载 Internet_iTV.txt 并重命名为 iTV.txt
+def fifth_stage():
+    """
+    第五阶段：从指定URL下载Internet_iTV.txt文件并重命名为iTV.txt
+    """
+    print("📥 第五阶段：下载并重命名 iTV.txt 文件")
+    
+    itv_url = "https://itv.shrimp.netlib.re/Internet_iTV.txt"
+    
+    try:
+        print(f"正在下载 {itv_url} ...")
+        response = requests.get(itv_url, headers=HEADERS, timeout=30)
+        response.raise_for_status()  # 检查请求是否成功
+        
+        # 保存文件，直接使用新的文件名 iTV.txt
+        with open(ITV_FILE, "w", encoding="utf-8") as f:
+            f.write(response.text)
+        
+        print(f"✅ iTV.txt 下载完成，大小：{len(response.text)} 字节")
+        return True
+        
+    except requests.exceptions.RequestException as e:
+        print(f"❌ 下载 iTV.txt 失败：{e}")
+        return False
+    except Exception as e:
+        print(f"❌ 保存 iTV.txt 失败：{e}")
+        return False
+
+
+# ===============================
+# 第六阶段：访问特定URL并保存响应内容到bc.m3u
+def sixth_stage():
+    """
+    第六阶段：从Mima.txt读取密码，访问特定URL并保存响应内容到bc.m3u
+    """
+    print("🔑 第六阶段：访问特定URL并保存响应内容到bc.m3u")
+    
+    # 检查密码文件是否存在
+    if not os.path.exists(MIMA_FILE):
+        print(f"⚠️ {MIMA_FILE} 文件不存在，跳过第六阶段")
+        return False
+    
+    try:
+        # 读取密码
+        with open(MIMA_FILE, "r", encoding="utf-8") as f:
+            password = f.read().strip()
+        
+        if not password:
+            print(f"⚠️ {MIMA_FILE} 文件内容为空，跳过第六阶段")
+            return False
+        
+        print(f"🔑 从 {MIMA_FILE} 读取到密码: {password}")
+        
+        # 构建URL
+        url = f"https://bc.188766.xyz/?ip=127.0.0.1&mishitong=true&mima={password}"
+        
+        # 设置请求头（模拟okhttp）
+        headers = {
+            "accept-encoding": "gzip",
+            "user-agent": "okhttp/5.0.0-alpha.14",
+            "Host": "bc.188766.xyz"
+        }
+        
+        print(f"🌐 正在访问 URL: {url}")
+        
+        # 发送GET请求
+        response = requests.get(url, headers=headers, timeout=30)
+        response.raise_for_status()  # 检查请求是否成功
+        
+        # 保存响应内容到bc.m3u
+        with open(BC_FILE, "w", encoding="utf-8") as f:
+            f.write(response.text)
+        
+        print(f"✅ bc.m3u 保存完成，大小：{len(response.text)} 字节")
+        
+        # 检查文件内容（显示前几行）
+        lines = response.text.split('\n')
+        print(f"📄 文件前5行预览：")
+        for i in range(min(5, len(lines))):
+            print(f"  {i+1}: {lines[i][:100]}{'...' if len(lines[i]) > 100 else ''}")
+        
+        return True
+        
+    except FileNotFoundError:
+        print(f"❌ {MIMA_FILE} 文件不存在")
+        return False
+    except Exception as e:
+        print(f"❌ 第六阶段执行失败：{e}")
+        return False
+
+
 # ===============================
 # 文件推送
 def push_all_files():
@@ -474,11 +604,56 @@ def push_all_files():
     except Exception:
         pass
 
+    # 先拉取远程更改，避免推送冲突
+    print("🔄 同步远程更改...")
+    pull_result = os.system("git pull --rebase origin main")
+    if pull_result != 0:
+        print("⚠️ git pull 失败，尝试继续推送")
+
+    # 添加文件（仅当文件存在时才添加）
     os.system("git add 计数.txt || true")
     os.system("git add ip/*.txt || true")
     os.system("git add IPTV.txt || true")
-    os.system('git commit -m "自动更新：计数、IP文件、IPTV.txt" || echo "⚠️ 无需提交"')
-    os.system("git push origin main || echo '⚠️ 推送失败'")
+    
+    # 仅在 MiGu.txt 存在时才添加
+    if os.path.exists(MIGU_FILE):
+        print(f"📁 添加 {MIGU_FILE} 到 git")
+        os.system(f"git add {MIGU_FILE} || true")
+    else:
+        print(f"⚠️ {MIGU_FILE} 不存在，跳过添加")
+    
+    # 仅在 iTV.txt 存在时才添加
+    if os.path.exists(ITV_FILE):
+        print(f"📁 添加 {ITV_FILE} 到 git")
+        os.system(f"git add {ITV_FILE} || true")
+    else:
+        print(f"⚠️ {ITV_FILE} 不存在，跳过添加")
+    
+    # 仅在 bc.m3u 存在时才添加
+    if os.path.exists(BC_FILE):
+        print(f"📁 添加 {BC_FILE} 到 git")
+        os.system(f"git add {BC_FILE} || true")
+    else:
+        print(f"⚠️ {BC_FILE} 不存在，跳过添加")
+    
+    # 根据存在的文件动态调整提交信息
+    commit_msg = "自动更新：计数、IP文件、IPTV.txt"
+    if os.path.exists(MIGU_FILE):
+        commit_msg += "、MiGu.txt"
+    if os.path.exists(ITV_FILE):
+        commit_msg += "、iTV.txt"
+    if os.path.exists(BC_FILE):
+        commit_msg += "、bc.m3u"
+    
+    os.system(f'git commit -m "{commit_msg}" || echo "⚠️ 无需提交"')
+    
+    print("🔼 推送到远程仓库...")
+    push_result = os.system("git push origin main")
+    if push_result != 0:
+        print("❌ 推送失败")
+    else:
+        print("✅ 推送成功")
+
 
 # ===============================
 # 主执行逻辑
@@ -490,9 +665,16 @@ if __name__ == "__main__":
     run_count = first_stage()
 
     if run_count % 10 == 0:
+        print(f"🔢 运行次数是10的倍数 ({run_count})，执行第二、三、四、五、六阶段")
         second_stage()
         third_stage()
+        fourth_stage()
+        fifth_stage()
+        sixth_stage()  # 添加第六阶段
     else:
-        print("ℹ️ 本次不是 10 的倍数，跳过第二、三阶段")
+        print(f"ℹ️ 本次不是 10 的倍数 ({run_count})，只执行第四、五、六阶段")
+        fourth_stage()
+        fifth_stage()
+        sixth_stage()  # 添加第六阶段
 
     push_all_files()
