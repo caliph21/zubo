@@ -44,7 +44,12 @@ jobs:
       - name: Clone and Copy IPTV Playlists
         run: |
           set -e
-          echo "🎵 开始复制 IPTV 播放列表..."
+          echo "🎵 开始更新 IPTV 播放列表..."
+          
+          # 删除旧的m3u文件
+          echo "🗑️ 删除旧的m3u文件..."
+          rm -f yylb.m3u hyyqk.m3u dyyqk.m3u yylunbo.m3u huyayqk.m3u douyuyqk.m3u
+          echo "✅ 已删除旧文件"
           
           # 克隆源仓库
           echo "📥 克隆源仓库..."
