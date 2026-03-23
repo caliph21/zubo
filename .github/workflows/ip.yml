@@ -1,5 +1,5 @@
 name: FOFA IP & IPTV Sync
-# ip.yaml
+
 on:
   schedule:
     # FOFA 任务：每 15 分钟执行一次
@@ -14,6 +14,8 @@ permissions:
 jobs:
   fetch-and-push:
     runs-on: ubuntu-latest
+    env:
+      TOKEN: ${{ secrets.M3U_TOKEN }}  # 添加TOKEN环境变量
 
     steps:
       - name: Checkout repository
@@ -64,6 +66,7 @@ jobs:
                   mv "$tmpfile" "$outfile"
                   echo "✅ $outfile 下载并覆盖完成"
                   
+                  # 对 dyyqk.m3u 进行URL替换
                   if [ "$outfile" = "dyyqk.m3u" ]; then
                     sed -i 's#https://live.ottiptv.cc#https://goodiptv.club#g' "$outfile"
                     echo "🔧 已将 $outfile 中的 live.ottiptv.cc 替换为 goodiptv.club"
@@ -82,8 +85,9 @@ jobs:
             return 1
           }
 
+          # 下载所有文件，添加token参数
           for f in "${files[@]}"; do
-            download_with_retry "${base}/${f}" "$f" || true
+            download_with_retry "${base}/${f}?token=${TOKEN}" "$f" || true
           done
 
           echo "📊 文件下载状态："
@@ -103,13 +107,13 @@ jobs:
           
           echo "🔍 检查文件变更..."
           
-          git add 计数.txt
-          git add ip/*.txt || true
-          git add iTV.txt || true
+          # 添加可能存在的文件
+          git add 计数.txt 2>/dev/null || true
+          git add ip/*.txt 2>/dev/null || true
+          git add iTV.txt 2>/dev/null || true
           
-          if ls *.m3u 1> /dev/null 2>&1; then
-            git add *.m3u
-          fi
+          # 添加所有m3u文件
+          git add *.m3u 2>/dev/null || true
           
           if git diff --cached --quiet; then
             echo "ℹ️ 没有检测到文件变更，跳过提交"
@@ -120,24 +124,27 @@ jobs:
             
             commit_msg="自动更新："
             
+            # 检查变更类型
             if git diff --cached --name-only | grep -q "计数.txt\|ip/.*\.txt\|iTV.txt"; then
-              commit_msg="$commit_msg 组播源"
+              commit_msg="${commit_msg}组播源"
             fi
             
             if git diff --cached --name-only | grep -q "\.m3u$"; then
               if [[ "$commit_msg" == *"组播源"* ]]; then
-                commit_msg="$commit_msg 和 IPTV播放列表"
+                commit_msg="${commit_msg} 和 IPTV播放列表"
               else
-                commit_msg="$commit_msg IPTV播放列表"
+                commit_msg="${commit_msg}IPTV播放列表"
               fi
             fi
             
-            commit_msg="$commit_msg - $(date '+%Y-%m-%d %H:%M:%S')"
+            commit_msg="${commit_msg} - $(date '+%Y-%m-%d %H:%M:%S')"
             
             git commit -m "$commit_msg"
             echo "✅ 已提交变更：$commit_msg"
           fi
 
       - name: Push changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git push origin main || echo "⚠️ 推送失败，可能是没有变更或权限问题"
+          git push origin ${GITHUB_REF_NAME:-main} || echo "⚠️ 推送失败，可能是没有变更或权限问题"
