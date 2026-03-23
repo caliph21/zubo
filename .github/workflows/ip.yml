@@ -46,9 +46,10 @@ jobs:
           set -e
           echo "🎵 开始更新 IPTV 播放列表..."
           
-          # 删除旧的m3u文件
+          # 删除所有相关的m3u文件（包括新旧文件名）
           echo "🗑️ 删除旧的m3u文件..."
-          rm -f yylb.m3u hyyqk.m3u dyyqk.m3u yylunbo.m3u huyayqk.m3u douyuyqk.m3u
+          rm -f yylb.m3u hyyqk.m3u dyyqk.m3u bililive.m3u
+          rm -f yylunbo.m3u huyayqk.m3u douyuyqk.m3u
           echo "✅ 已删除旧文件"
           
           # 克隆源仓库
@@ -117,6 +118,9 @@ jobs:
           
           # 添加重命名后的m3u文件
           git add yylb.m3u hyyqk.m3u dyyqk.m3u bililive.m3u 2>/dev/null || true
+          
+          # 同时删除旧文件（如果还存在）
+          git rm --ignore-unmatch yylunbo.m3u huyayqk.m3u douyuyqk.m3u 2>/dev/null || true
           
           if git diff --cached --quiet; then
             echo "ℹ️ 没有检测到文件变更，跳过提交"
