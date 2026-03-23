@@ -14,8 +14,6 @@ permissions:
 jobs:
   fetch-and-push:
     runs-on: ubuntu-latest
-    env:
-      TOKEN: ${{ secrets.M3U_TOKEN }}  # 添加TOKEN环境变量
 
     steps:
       - name: Checkout repository
@@ -36,62 +34,62 @@ jobs:
       - name: Install ffmpeg and wget
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg wget
+          sudo apt-get install -y ffmpeg wget git
 
       # ===== FOFA 任务部分 =====
       - name: Run fofa_fetch.py
         run: python fofa_fetch.py
 
       # ===== IPTV 任务部分 =====
-      - name: Download and Update IPTV Playlists
+      - name: Clone and Copy IPTV Playlists
         run: |
           set -e
-          echo "🎵 开始下载 IPTV 播放列表..."
+          echo "🎵 开始复制 IPTV 播放列表..."
           
-          base="https://mgtv.ottiptv.cc"
-          files=("yylb.m3u" "hyyqk.m3u" "dyyqk.m3u" "bililive.m3u")
+          # 克隆源仓库
+          echo "📥 克隆源仓库..."
+          git clone --depth 1 https://github.com/mursor1985/LIVE.git temp_repo
           
-          download_with_retry () {
-            local url="$1"
-            local outfile="$2"
-            local tmpfile="${outfile}.tmp"
-            local attempt=1
-            local max=5
-
-            rm -f "$tmpfile"
-            while [ $attempt -le $max ]; do
-              echo "➡️  [$attempt/$max] 下载 $outfile ..."
-              if wget -q --timeout=15 --connect-timeout=10 "$url" -O "$tmpfile"; then
-                if [ -s "$tmpfile" ]; then
-                  mv "$tmpfile" "$outfile"
-                  echo "✅ $outfile 下载并覆盖完成"
-                  
-                  # 对 dyyqk.m3u 进行URL替换
-                  if [ "$outfile" = "dyyqk.m3u" ]; then
-                    sed -i 's#https://live.ottiptv.cc#https://goodiptv.club#g' "$outfile"
-                    echo "🔧 已将 $outfile 中的 live.ottiptv.cc 替换为 goodiptv.club"
-                  fi
-                  
-                  return 0
-                fi
-              fi
-              echo "⚠️  $outfile 下载失败，等待 $attempt 秒后重试..."
-              sleep $attempt
-              attempt=$(( attempt + 1 ))
-            done
-
-            echo "❌ $outfile 最终下载失败，保留旧版本"
-            rm -f "$tmpfile"
-            return 1
-          }
-
-          # 下载所有文件，添加token参数
-          for f in "${files[@]}"; do
-            download_with_retry "${base}/${f}?token=${TOKEN}" "$f" || true
-          done
-
-          echo "📊 文件下载状态："
-          for f in "${files[@]}"; do
+          # 复制需要的4个文件
+          echo "📝 复制文件..."
+          
+          if [ -f "temp_repo/bililive.m3u" ]; then
+            cp temp_repo/bililive.m3u ./bililive.m3u
+            echo "✅ bililive.m3u"
+          else
+            echo "⚠️ 未找到 bililive.m3u"
+          fi
+          
+          if [ -f "temp_repo/douyuyqk.m3u" ]; then
+            cp temp_repo/douyuyqk.m3u ./douyuyqk.m3u
+            echo "✅ douyuyqk.m3u"
+            # 对 douyuyqk.m3u 进行URL替换
+            sed -i 's#https://live.ottiptv.cc#https://goodiptv.club#g' ./douyuyqk.m3u
+            echo "🔧 已将 douyuyqk.m3u 中的 live.ottiptv.cc 替换为 goodiptv.club"
+          else
+            echo "⚠️ 未找到 douyuyqk.m3u"
+          fi
+          
+          if [ -f "temp_repo/huyayqk.m3u" ]; then
+            cp temp_repo/huyayqk.m3u ./huyayqk.m3u
+            echo "✅ huyayqk.m3u"
+          else
+            echo "⚠️ 未找到 huyayqk.m3u"
+          fi
+          
+          if [ -f "temp_repo/yylunbo.m3u" ]; then
+            cp temp_repo/yylunbo.m3u ./yylunbo.m3u
+            echo "✅ yylunbo.m3u"
+          else
+            echo "⚠️ 未找到 yylunbo.m3u"
+          fi
+          
+          # 清理临时仓库
+          rm -rf temp_repo
+          
+          # 显示文件状态
+          echo "📊 文件复制状态："
+          for f in bililive.m3u douyuyqk.m3u huyayqk.m3u yylunbo.m3u; do
             if [ -s "$f" ]; then
               echo "✅ $f - $(wc -c < "$f") 字节"
             else
@@ -112,8 +110,8 @@ jobs:
           git add ip/*.txt 2>/dev/null || true
           git add iTV.txt 2>/dev/null || true
           
-          # 添加所有m3u文件
-          git add *.m3u 2>/dev/null || true
+          # 添加4个m3u文件
+          git add bililive.m3u douyuyqk.m3u huyayqk.m3u yylunbo.m3u 2>/dev/null || true
           
           if git diff --cached --quiet; then
             echo "ℹ️ 没有检测到文件变更，跳过提交"
