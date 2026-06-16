@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ITV 文件列表</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        .header h1 { font-size: 28px; margin-bottom: 8px; }
+        .header p { opacity: 0.9; font-size: 14px; word-break: break-all; }
+        .stats {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            gap: 20px;
+            font-size: 14px;
+            color: #6c757d;
+        }
+        .stats span { font-weight: 600; color: #333; }
+        .file-list { padding: 20px 30px 30px; }
+        .file-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #f0f0f0;
+            transition: background 0.2s;
+        }
+        .file-item:hover { background: #f8f9fa; }
+        .file-icon {
+            width: 40px;
+            font-size: 24px;
+            margin-right: 15px;
+        }
+        .file-info { flex: 1; }
+        .file-name {
+            font-weight: 500;
+            color: #333;
+            word-break: break-all;
+        }
+        .file-url {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 4px;
+            word-break: break-all;
+        }
+        .download-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s;
+        }
+        .download-btn:hover {
+            background: #5a67d8;
+        }
+        .footer {
+            background: #f8f9fa;
+            padding: 15px 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #6c757d;
+            border-top: 1px solid #e9ecef;
+        }
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #6c757d;
+        }
+        .badge {
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 20px;
+            font-size: 11px;
+            margin-left: 10px;
+        }
+        @media (max-width: 600px) {
+            .container { border-radius: 0; }
+            .header h1 { font-size: 22px; }
+            .file-list { padding: 15px; }
+            .file-item { flex-wrap: wrap; }
+            .download-btn { margin-top: 10px; margin-left: 55px; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📺 ITV 资源列表</h1>
+        <p>itv.1920.qzz.io</p>
+    </div>
+    <div class="stats" id="stats">
+        正在加载文件列表...
+    </div>
+    <div class="file-list" id="fileList">
+        <div class="loading">⏳ 正在扫描文件，请稍后...</div>
+    </div>
+    <div class="footer">
+        ⚡ 点击文件名或下载按钮即可访问 | 支持 .txt / .m3u 格式
+    </div>
+</div>
+
+<script>
+// 需要列出的文件扩展名
+const extensions = ['txt', 'm3u'];
+
+// 手动指定要显示的文件（如果你知道所有文件名，推荐用这个，更快更稳定）
+// 如果没有手动指定，脚本会尝试 fetch 根目录（可能因 CORS 失败）
+const manualFiles = [
+    "ITVlist.py",  // .py 也会显示，但主要功能是 txt/m3u
+    "MiGu.txt",
+    "README.md",
+    "bc.m3u",
+    "bilibiliive.m3u",
+    "dyyqk.m3u",
+    "fofa_fetch.py",
+    "hyyqk.m3u",
+    "iTV.txt",
+    "ip_urls.txt",
+    "itvlist.txt",
+    "yylb.m3u",
+    "vyh.m3u",
+    "IPTV.txt",
+    "计数.txt"
+];
+
+// 去重并过滤出 txt 和 m3u 文件
+const allFiles = [...new Set(manualFiles)];
+const mediaFiles = allFiles.filter(file => {
+    const ext = file.split('.').pop().toLowerCase();
+    return extensions.includes(ext);
+});
+
+// 如果没有找到 txt/m3u 文件，显示所有文件
+const displayFiles = mediaFiles.length > 0 ? mediaFiles : allFiles;
+
+function getFileIcon(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    if (ext === 'm3u') return '🎬';
+    if (ext === 'txt') return '📄';
+    if (ext === 'py') return '🐍';
+    if (ext === 'md') return '📝';
+    return '📁';
+}
+
+function formatFileSize(bytes) {
+    if (!bytes) return '';
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+async function fetchFileSize(url) {
+    try {
+        const response = await fetch(url, { method: 'HEAD' });
+        const size = response.headers.get('Content-Length');
+        return size ? parseInt(size) : null;
+    } catch (e) {
+        return null;
+    }
+}
+
+async function loadFiles() {
+    const fileListDiv = document.getElementById('fileList');
+    const statsDiv = document.getElementById('stats');
+    
+    const baseUrl = window.location.origin;
+    
+    // 更新统计
+    statsDiv.innerHTML = `📁 共 <span>${displayFiles.length}</span> 个文件  |  🎬 m3u: <span>${displayFiles.filter(f => f.endsWith('.m3u')).length}</span>  |  📄 txt: <span>${displayFiles.filter(f => f.endsWith('.txt')).length}</span>`;
+    
+    if (displayFiles.length === 0) {
+        fileListDiv.innerHTML = '<div class="loading">❌ 没有找到 .txt 或 .m3u 文件</div>';
+        return;
+    }
+    
+    fileListDiv.innerHTML = '';
+    
+    for (const filename of displayFiles) {
+        const fileUrl = `${baseUrl}/${filename}`;
+        const fileIcon = getFileIcon(filename);
+        
+        const fileItem = document.createElement('div');
+        fileItem.className = 'file-item';
+        fileItem.innerHTML = `
+            <div class="file-icon">${fileIcon}</div>
+            <div class="file-info">
+                <div class="file-name">
+                    ${filename}
+                    <span class="badge">${filename.split('.').pop().toUpperCase()}</span>
+                </div>
+                <div class="file-url">${fileUrl}</div>
+            </div>
+            <a href="${fileUrl}" class="download-btn" target="_blank">🔗 访问</a>
+        `;
+        fileListDiv.appendChild(fileItem);
+    }
+}
+
+// 页面加载后执行
+loadFiles();
+</script>
+</body>
+</html>
