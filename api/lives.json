@@ -1,5 +1,5 @@
 [
-  "source": "http://115.190.252.60/?cate=1",
+  #"source": "http://115.190.252.60/?cate=1",
   "lives": [
     {"name": "咪咕直播源", "url": "http://129.211.14.102:27777/api.php?token=c164b1427bac7946a974cccd8909adcd"},
     {"name": "央视卫视接口", "url": "http://129.211.14.102:27777/api.php?token=4255b7aa0936d50e5d5e5761ed8372f1"},
