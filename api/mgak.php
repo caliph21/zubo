@@ -18,7 +18,8 @@
  */
 
 const DEFAULT_UA = 'Dalvik/2.1.0 (Linux; U; Android 15; XIAOMI-15 Build/TP1A.220624.014)';
-const DEFAULT_EDS_LOGIN_URL = 'http://aikanlive.miguvideo.com:8082/EDS/JSON/Login';
+// 修改：直接使用目标登录地址，跳过302重定向
+const DEFAULT_EDS_LOGIN_URL = 'http://vsc.aikan.miguvideo.com:7113/EPG/JSON/Login';
 const DEFAULT_GETTIME_URL = 'http://aikanvod.miguvideo.com/video/p/getTime.jsp?vt=9';
 const DEFAULT_BUSINESS_TYPE = 'BTV';
 const DEFAULT_CHANNEL_ID = '265667645';
@@ -205,13 +206,12 @@ function http_request(
     $raw = curl_exec($ch);
     if ($raw === false) {
         $err = curl_error($ch);
-        curl_close($ch);
+        // 移除 curl_close 以避免 PHP 8.5+ 弃用警告
         return ['ok' => false, 'error' => 'curl_exec 失败: ' . $err];
     }
 
     $status = (int) curl_getinfo($ch, CURLINFO_HTTP_CODE);
     $headerSize = (int) curl_getinfo($ch, CURLINFO_HEADER_SIZE);
-    curl_close($ch);
 
     $rawHeader = substr($raw, 0, $headerSize);
     $respBody = substr($raw, $headerSize);
@@ -249,57 +249,7 @@ function http_request(
     ];
 }
 
-function post_json_follow_302_once(
-    string $url,
-    array $payload,
-    array $headers,
-    int $timeout = 10
-): array {
-    $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
-    if ($body === false) {
-        return ['ok' => false, 'error' => 'JSON 编码失败'];
-    }
-    $resp = http_request('POST', $url, $headers, $body, $timeout);
-    if (!$resp['ok']) {
-        return $resp;
-    }
-    if ((int) $resp['status'] === 302 && isset($resp['headers']['location'])) {
-        $redirected = (string) $resp['headers']['location'];
-        $h2 = $headers;
-        unset($h2['isEncrypt']);
-        $resp = http_request('POST', $redirected, $h2, $body, $timeout);
-    }
-    return $resp;
-}
-
-function find_cookie_raw(array $setCookies, string $keyword): string
-{
-    foreach ($setCookies as $line) {
-        if (strpos($line, $keyword) !== false) {
-            return $line;
-        }
-    }
-    return '';
-}
-
-function build_cookie(array $state, bool $includeArrayid = true): string
-{
-    $parts = ['JSESSIONID=' . (string) ($state['session_id'] ?? '')];
-    if (!empty($state['set_cookie_raw'])) {
-        $pair = normalize_cookie_pair((string) $state['set_cookie_raw']);
-        if ($pair !== '') {
-            $parts[] = $pair;
-        }
-    }
-    if ($includeArrayid && !empty($state['arrayid_raw'])) {
-        $pair = normalize_cookie_pair((string) $state['arrayid_raw']);
-        if ($pair !== '') {
-            $parts[] = $pair;
-        }
-    }
-    return implode('; ', $parts);
-}
-
+// 修改：直接登录，无需处理302重定向
 function login_eds(array &$state, string $phone, int $timeout): void
 {
     $payload = [];
@@ -313,7 +263,14 @@ function login_eds(array &$state, string $phone, int $timeout): void
         'Connection' => 'keep-alive',
         'isEncrypt' => '0',
     ];
-    $resp = post_json_follow_302_once(DEFAULT_EDS_LOGIN_URL, $payload, $headers, $timeout);
+    
+    $body = json_encode($payload, JSON_UNESCAPED_UNICODE);
+    if ($body === false) {
+        throw new RuntimeException('JSON 编码失败');
+    }
+    
+    // 直接POST到目标地址
+    $resp = http_request('POST', DEFAULT_EDS_LOGIN_URL, $headers, $body, $timeout);
     if (!$resp['ok']) {
         throw new RuntimeException($resp['error']);
     }
